@@ -40,11 +40,8 @@ npm install
 
 - Configure .env:
 PORT=5000
-MONGO_USER=surabhi
-MONGO_PASS=surNadh_7329@
-MONGO_HOST=backenddb.qwxdc.mongodb.net
-MONGO_DB=backenddb
-JWT_SECRET=8bcb1894db519347271e2ad9d34eb6cee8333fe3fa5ca0e7bc2a696209f16288f25f069f01260d2721bc85e11254165657fe02e444031004fb65eef88ee5568e
+MONGODB_URI="mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority"
+JWT_SECRET="<your-secret-key>"
 JWT_EXPIRES=1h
 CORS_ORIGIN=http://localhost:3000
 
