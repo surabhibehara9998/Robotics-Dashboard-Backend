@@ -73,6 +73,34 @@ WebSocket URL: ws://localhost:5000
 - File: postman_collection/Robotic Dashboard.postman_collection.json
 - Import into Postman Client to test APIs.
 
+#Deployment (AWS)
+- Frontend (React)
+Build with npm run build → upload to S3 bucket → enable static hosting.
+Use CloudFront as CDN + Route53 + ACM TLS certs for secure custom domain.
+Restrict bucket access so only CloudFront serves content.
+
+- Backend (Node.js/Express)
+
+ --Option A – Elastic Beanstalk (managed): Great for quick deployments with auto-scaling, health checks, and managed load balancing. Best suited for PoC and small-to-mid production workloads.
+*Deploy with eb init, eb create, eb deploy.
+*EB handles scaling, health checks, load balancing.
+*Configure env vars in EB console.
+
+ --Option B – ECS Fargate (containerized): Ideal for production with fine-grained scaling and cost control. Supports Dockerized workloads, integrates with ALB (WebSockets), and Secrets Manager. Preferred choice for enterprise-grade deployments.
+*Build Docker image → push to ECR → run ECS service on Fargate behind ALB.
+*ALB supports WebSockets.
+*Use Secrets Manager for Mongo URI & JWT secret.
+
+ --Alternative (not preferred) – EC2 + Nginx + PM2 (manual): Works but requires manual scaling, patching, and monitoring. Useful for learning or very simple setups, but not recommended in production.
+*Provision EC2, install Node.js & PM2.
+*Run app behind Nginx reverse proxy (configured for WebSockets).
+*Secure ports with AWS Security Groups.
+
+#Database
+-Use MongoDB Atlas in same AWS region as backend.
+-Configure VPC peering for secure connectivity.
+-Alternative: AWS DocumentDB (if native AWS service required).
+
 #High-Frequency Data Sink (Task 1.1 – Conceptual Architecture)
 Managing raw high-frequency telemetry (e.g., IMU readings at millisecond intervals, camera metadata, or continuous sensor feeds) from 100+ robots cannot be efficiently handled by writing directly into MongoDB. MongoDB is excellent for structured metadata and fleet state, but it is not designed to absorb unbounded streaming workloads at this scale without introducing write bottlenecks and cost inefficiencies.
 Instead, I would design the ingestion pipeline around AWS Kinesis Data Streams as the primary data sink.
