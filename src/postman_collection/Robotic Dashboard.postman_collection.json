@@ -55,13 +55,13 @@
 					},
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZDk1OTZmMjY4MzBhZmQ2MjJjNWI2MSIsImlhdCI6MTc1OTA3NDY4NCwiZXhwIjoxNzU5MDc4Mjg0fQ._vtk4BrCAdgcVF_HxUK5uFvkQFJwhOXBO1WAen4b5_o",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZDk1OTZmMjY4MzBhZmQ2MjJjNWI2MSIsImlhdCI6MTc1OTA4MDk2NCwiZXhwIjoxNzU5MDg0NTY0fQ.sHPO8h1_eYuhQYzth9qxoR2ihmB2tmTiDT0-o01O7K0",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"config\": {\r\n        \"speed\": 300,\r\n        \"mode\": \"automatic\",\r\n        \"task\": \"idle\"\r\n    }\r\n}",
+					"raw": "{\r\n    \"config\": {\r\n        \"speed\": 30,\r\n        \"mode\": \"automatic\",\r\n        \"task\": \"idle\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -152,6 +152,25 @@
 						"api",
 						"auth",
 						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/healthz",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"healthz"
 					]
 				}
 			},
