@@ -13,7 +13,7 @@ const app = express();
 app.use(helmet());
 app.disable("x-powered-by");
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 
 app.use(morgan("dev"));
 
