@@ -73,9 +73,38 @@ WebSocket URL: ws://localhost:5000
 - File: postman_collection/Robotic Dashboard.postman_collection.json
 - Import into Postman Client to test APIs.
 
+#High-Frequency Data Sink (Task 1.1 – Conceptual Architecture)
+Managing raw high-frequency telemetry (e.g., IMU readings at millisecond intervals, camera metadata, or continuous sensor feeds) from 100+ robots cannot be efficiently handled by writing directly into MongoDB. MongoDB is excellent for structured metadata and fleet state, but it is not designed to absorb unbounded streaming workloads at this scale without introducing write bottlenecks and cost inefficiencies.
+Instead, I would design the ingestion pipeline around AWS Kinesis Data Streams as the primary data sink.
+
+- Why AWS Kinesis?
+  --Massive Ingestion Capacity: Capable of handling millions of events per second with single-digit millisecond latency.
+  --Elastic Scalability: Scales horizontally by adding shards, ensuring smooth handling of load spikes (e.g., robots streaming more frequently during mission-critical phases).
+  --Durability & Replay: All telemetry is durably persisted for 24 hours (configurable up to 7 days), enabling replay of streams for debugging or reprocessing.
+  --Ecosystem Integration: Natively integrates with AWS Lambda, Kinesis Data Firehose, S3, Redshift, and external systems such as MongoDB Atlas — reducing operational complexity.
+  
+- Data Flow
+Robots → Kinesis Data Stream → Lambda (processing, aggregation, filtering) → 
+   → Persist summaries to MongoDB Atlas (fleet dashboard)
+   → Persist raw streams to S3 (cheap long-term storage) or AWS Timestream (time-series analytics)
+
+- Why not write directly to MongoDB?
+  --MongoDB excels at metadata, config, and dashboards, but unbounded high-frequency writes can overwhelm the cluster, drive up costs, and degrade query performance.
+  --By introducing Kinesis as a buffer and event backbone, we decouple ingestion from persistence. MongoDB receives only aggregated or curated telemetry suitable for real-time dashboards, while raw data is
+  offloaded to time-series or object storage.
+
+- Alternative: AWS Timestream
+For workloads where time-series analysis (rolling averages, battery trends, anomaly detection) is the primary use case, AWS Timestream is a strong alternative. It offers:
+  --Native time-series functions (windowed aggregates, interpolation).
+  --Built-in tiered storage with automatic aging of data (recent data in memory, older data in cost-optimized storage).
+  --Zero-maintenance scaling for time-series use cases.
+  --In this hybrid approach:
+  --Kinesis remains the ingestion backbone.
+  --MongoDB Atlas stores fleet metadata, robot configs, and the “last known state.”
+  --AWS Timestream or S3 stores raw high-frequency telemetry for historical analysis and ML training pipelines.
+
 #Health & Monitoring
 - /healthz → returns DB connection status
 - Rate limiter on login to prevent brute force
 - Helmet & CORS for API security
 - Logs can be forwarded to CloudWatch (optional)
-
