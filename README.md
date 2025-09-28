@@ -1,135 +1,176 @@
-# Robotics-Dashboard-Backend
-A MERN stack backend for a Real-Time Robotics Telemetry Dashboard.
-Implements clean layered architecture (Controller -> Service -> Repository), JWT authentication, robot APIs, WebSocket-based telemetry, and MongoDB Atlas integration.
+## Robotics-Dashboard-Backend
+A MERN stack backend for a Real-Time Robotics Telemetry Dashboard. Implements clean layered architecture (Controller -> Service -> Repository), JWT authentication, robot APIs, WebSocket-based telemetry, and MongoDB Atlas integration. This project is fully containerized with Docker and includes a comprehensive automated testing suite.
 
-#Project Structure
+## Project Structure
 src/
- - config/          # DB connection
- - controllers/     # Express controllers (Auth, Robot)
- - middleware/      # JWT middleware, error handling
- - models/          # Mongoose models (User, Robot, Telemetry)
- - repository/      # Data access (UserRepository, RobotRepository)
- - routes/          # Routes (auth.js, robot.js)
- - services/        # Business logic (AuthService, RobotService)
- - scripts/         # DB utilities (seed, listCollections, etc.)
- - app.js           # Express app setup
- - server.js        # Entry point + WebSocket server
-   
-#Features
-- User Authentication (JWT, bcrypt, express-validator)
-- Robot APIs (pagination, filtering, config updates)
-- WebSocket Telemetry (real-time robot data every 500ms)
-- MongoDB Atlas integration
-- Security (helmet, cors, rate-limiter)
-- Error handling middleware
-- Postman collection included
+├── config/         # DB connection
+├── controllers/    # Express controllers (Auth, Robot)
+├── middleware/     # JWT middleware, error handling
+├── models/         # Mongoose models (User, Robot)
+├── repository/     # Data access (UserRepository, RobotRepository)
+├── routes/         # API routes (auth.js, robot.js)
+├── services/       # Business logic (AuthService, RobotService)
+├── test/           # Jest/Supertest automated tests
+├── app.js          # Express app setup
+└── server.js       # Entry point + WebSocket server
+## Features
+Clean Architecture: Follows a professional layered architecture (Controller -> Service -> Repository) for separation of concerns and maintainability.
 
-#Tech Stack
-- Node.js, Express.js
-- MongoDB Atlas + Mongoose
-- Socket.IO (real-time telemetry)
-- JWT (jsonwebtoken)
-- bcrypt for password hashing
-- helmet, cors, morgan, express-rate-limit
+Secure User Authentication: Implements JWT-based authentication with bcrypt for password hashing and express-validator for input validation.
 
-#Setup
-- Clone repo & install dependencies:
-git clone <repo-url>
+Robust Robot APIs: Provides RESTful endpoints for paginating, filtering, and updating robot configurations.
+
+Real-Time WebSocket Telemetry: Broadcasts live robot data to authenticated clients every 500ms using Socket.IO.
+
+Production-Grade Security: Includes helmet for security headers, cors for resource sharing, and express-rate-limit to prevent brute-force attacks.
+
+Containerized with Docker: Fully containerized for consistent, portable, and scalable deployments.
+
+Automated Testing: A comprehensive test suite using Jest and Supertest ensures application reliability and code quality.
+
+## Tech Stack
+Backend: Node.js, Express.js
+
+Database: MongoDB Atlas + Mongoose
+
+Real-Time: Socket.IO
+
+Authentication: JSON Web Token (jsonwebtoken), bcrypt
+
+Testing: Jest, Supertest
+
+Deployment: Docker
+
+Middleware: helmet, cors, morgan, express-rate-limit
+
+## Setup
+Clone the repository:
+
+Bash
+
+git clone <your-repo-url>
 cd robotics-dashboard-backend
+Install dependencies:
+
+Bash
+
 npm install
+Configure .env file:
+Create a .env file in the root directory and add the following variables:
 
-- Configure .env:
 PORT=5000
-MONGODB_URI="mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority"
-JWT_SECRET="<your-secret-key>"
+MONGODB_URI="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority"
+JWT_SECRET="<your-strong-jwt-secret>"
 JWT_EXPIRES=1h
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:5173
+Run the server:
 
-- Run server:
+Bash
+
 npm start
-  
-Server runs on:
-http://localhost:5000
+Server runs on: http://localhost:5000
 
-#REST API Endpoints
-- Auth: 
+## Running with Docker
+The application is fully containerized for easy and consistent deployment.
+
+Build the Docker image:
+
+Bash
+
+docker build -t robotics-dashboard-backend .
+Run the Docker container (using your .env file):
+
+Bash
+
+docker run --env-file .env -p 5000:5000 robotics-dashboard-backend
+## Automated Testing
+The backend includes a comprehensive testing suite to ensure code quality and reliability.
+
+Framework: Jest is used as the test runner and assertion library.
+
+HTTP Testing: Supertest is used for integration testing of the Express API endpoints.
+
+Coverage:
+
+Unit Tests: Business logic within the service layer is tested in isolation.
+
+Integration Tests: Critical API endpoints (e.g., user registration, login, robot configuration) are tested to ensure the entire request/response cycle works correctly.
+
+How to Run Tests:
+
+Bash
+
+npm test
+## REST API Endpoints
+Auth:
+
 POST /api/auth/register
+
 POST /api/auth/login
 
-- Robots:
+Robots:
+
 GET /api/robots?page=1&limit=10&status=active
+
 PUT /api/robots/:id/config (JWT required)
 
-#Authentication
-Add header to all protected requests: Authorization: Bearer <jwt-token>
+## Authentication
+Add the following header to all protected requests: Authorization: Bearer <your-jwt-token>
 
-#WebSocket Integration
-WebSocket URL: ws://localhost:5000
+## WebSocket Integration
+URL: ws://localhost:5000
 
-#Postman Collection
-- File: postman_collection/Robotic Dashboard.postman_collection.json
-- Import into Postman Client to test APIs.
+Authentication: Requires a valid JWT to be passed in the auth object of the Socket.IO handshake for the connection to be accepted.
 
-#Deployment (AWS)
-- Frontend (React)
-Build with npm run build → upload to S3 bucket → enable static hosting.
-Use CloudFront as CDN + Route53 + ACM TLS certs for secure custom domain.
-Restrict bucket access so only CloudFront serves content.
+## Postman Collection
+File: postman_collection/Robotic Dashboard.postman_collection.json
 
-- Backend (Node.js/Express)
+Import into your Postman Client to easily test all API endpoints.
 
- --Option A – Elastic Beanstalk (managed): Great for quick deployments with auto-scaling, health checks, and managed load balancing. Best suited for PoC and small-to-mid production workloads.
-*Deploy with eb init, eb create, eb deploy.
-*EB handles scaling, health checks, load balancing.
-*Configure env vars in EB console.
+## Deployment (AWS)
+### Frontend (React)
+Build with npm run build → upload the static contents of the dist folder to an S3 bucket → enable static website hosting. Use CloudFront as a CDN for global low-latency delivery and attach a TLS certificate from ACM for HTTPS. Restrict S3 bucket access so that content can only be served via CloudFront using an Origin Access Identity (OAI).
 
- --Option B – ECS Fargate (containerized): Ideal for production with fine-grained scaling and cost control. Supports Dockerized workloads, integrates with ALB (WebSockets), and Secrets Manager. Preferred choice for enterprise-grade deployments.
-*Build Docker image → push to ECR → run ECS service on Fargate behind ALB.
-*ALB supports WebSockets.
-*Use Secrets Manager for Mongo URI & JWT secret.
+### Backend (Node.js/Express)
+Option A – Elastic Beanstalk (Managed): Great for quick deployments with auto-scaling, health checks, and managed load balancing. Best suited for PoC and small-to-mid production workloads. Deploy with the EB CLI (eb init, eb create, eb deploy) and configure environment variables in the EB console.
 
- --Alternative (not preferred) – EC2 + Nginx + PM2 (manual): Works but requires manual scaling, patching, and monitoring. Useful for learning or very simple setups, but not recommended in production.
-*Provision EC2, install Node.js & PM2.
-*Run app behind Nginx reverse proxy (configured for WebSockets).
-*Secure ports with AWS Security Groups.
+Option B – ECS Fargate (Containerized, Recommended for Production): Ideal for production with fine-grained scaling and cost control. Build a Docker image → push to ECR → run as an ECS service on Fargate behind an Application Load Balancer (ALB) that is configured for WebSocket sticky sessions. Use AWS Secrets Manager for the Mongo URI and JWT secret.
 
-#Database
--Use MongoDB Atlas in same AWS region as backend.
--Configure VPC peering for secure connectivity.
--Alternative: AWS DocumentDB (if native AWS service required).
+Option C – EC2 + Nginx + PM2 (Manual): Works but requires manual scaling, patching, and monitoring. Not recommended for production.
 
-#High-Frequency Data Sink (Task 1.1 – Conceptual Architecture)
-Managing raw high-frequency telemetry (e.g., IMU readings at millisecond intervals, camera metadata, or continuous sensor feeds) from 100+ robots cannot be efficiently handled by writing directly into MongoDB. MongoDB is excellent for structured metadata and fleet state, but it is not designed to absorb unbounded streaming workloads at this scale without introducing write bottlenecks and cost inefficiencies.
-Instead, I would design the ingestion pipeline around AWS Kinesis Data Streams as the primary data sink.
+## Database
+Use MongoDB Atlas and host the cluster in the same AWS region as the backend for low latency.
 
-- Why AWS Kinesis?
-  --Massive Ingestion Capacity: Capable of handling millions of events per second with single-digit millisecond latency.
-  --Elastic Scalability: Scales horizontally by adding shards, ensuring smooth handling of load spikes (e.g., robots streaming more frequently during mission-critical phases).
-  --Durability & Replay: All telemetry is durably persisted for 24 hours (configurable up to 7 days), enabling replay of streams for debugging or reprocessing.
-  --Ecosystem Integration: Natively integrates with AWS Lambda, Kinesis Data Firehose, S3, Redshift, and external systems such as MongoDB Atlas — reducing operational complexity.
-  
-- Data Flow
-Robots → Kinesis Data Stream → Lambda (processing, aggregation, filtering) → 
-   → Persist summaries to MongoDB Atlas (fleet dashboard)
-   → Persist raw streams to S3 (cheap long-term storage) or AWS Timestream (time-series analytics)
+Configure VPC Peering between your AWS VPC and the MongoDB Atlas VPC for a secure, private network connection.
 
-- Why not write directly to MongoDB?
-  --MongoDB excels at metadata, config, and dashboards, but unbounded high-frequency writes can overwhelm the cluster, drive up costs, and degrade query performance.
-  --By introducing Kinesis as a buffer and event backbone, we decouple ingestion from persistence. MongoDB receives only aggregated or curated telemetry suitable for real-time dashboards, while raw data is
-  offloaded to time-series or object storage.
+Alternative: AWS DocumentDB if a native AWS database service is required.
 
-- Alternative: AWS Timestream
-For workloads where time-series analysis (rolling averages, battery trends, anomaly detection) is the primary use case, AWS Timestream is a strong alternative. It offers:
-  --Native time-series functions (windowed aggregates, interpolation).
-  --Built-in tiered storage with automatic aging of data (recent data in memory, older data in cost-optimized storage).
-  --Zero-maintenance scaling for time-series use cases.
-  --In this hybrid approach:
-  --Kinesis remains the ingestion backbone.
-  --MongoDB Atlas stores fleet metadata, robot configs, and the “last known state.”
-  --AWS Timestream or S3 stores raw high-frequency telemetry for historical analysis and ML training pipelines.
+## High-Frequency Data Sink (Task 1.1 – Conceptual Architecture)
+Managing raw, high-frequency telemetry from a large fleet of robots is not efficiently handled by writing directly to a general-purpose database like MongoDB. The optimal solution is to use a dedicated stream-processing service as an ingestion buffer. This project proposes an architecture built around AWS Kinesis Data Streams.
 
-#Health & Monitoring
-- /healthz → returns DB connection status
-- Rate limiter on login to prevent brute force
-- Helmet & CORS for API security
-- Logs can be forwarded to CloudWatch (optional)
+### Why AWS Kinesis?
+Massive Ingestion Capacity: Handles millions of events per second with low latency.
+
+Elastic Scalability: Scales horizontally by adding shards to handle load spikes.
+
+Durability & Replay: Persists all telemetry for a configurable period, enabling replay for debugging or reprocessing.
+
+Ecosystem Integration: Natively integrates with AWS Lambda, S3, and other services, allowing for decoupled and scalable data processing pipelines.
+
+### Data Flow
+Code snippet
+
+graph TD
+    A[Robots] -- Telemetry Stream --> B(AWS Kinesis Data Stream);
+    B -- Events --> C{AWS Lambda};
+    C -- Aggregated State --> D[(MongoDB Atlas)];
+    C -- Raw Time-Series Data --> E[(S3 / AWS Timestream)];
+    F[Fleet Dashboard] <--> D;
+By using Kinesis as a buffer, we decouple ingestion from persistence. MongoDB receives only the curated state needed for the real-time dashboard, while raw data is offloaded to more suitable storage like S3 or a time-series database like AWS Timestream for historical analysis.
+
+## Health & Monitoring
+/healthz: A dedicated endpoint that returns the database connection status (200 OK or 503 Service Unavailable).
+
+Rate Limiter: express-rate-limit is applied to the login endpoint to prevent brute-force attacks.
+
+Security Headers: helmet and cors are configured for API security best practices.
