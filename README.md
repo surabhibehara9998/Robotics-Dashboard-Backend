@@ -56,44 +56,40 @@ Middleware: helmet, cors, morgan, express-rate-limit
 
 ## Setup
 Clone the repository:
-
-Bash
-
+```
 git clone <your-repo-url>
 cd robotics-dashboard-backend
+```
 Install dependencies:
-
-Bash
-
+```
 npm install
+```
 Configure .env file:
 Create a .env file in the root directory and add the following variables:
-
+```
 PORT=5000
 MONGODB_URI="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority"
 JWT_SECRET="<your-strong-jwt-secret>"
 JWT_EXPIRES=1h
 CORS_ORIGIN=http://localhost:5173
+```
 Run the server:
-
-Bash
-
+```
 npm start
+```
 Server runs on: http://localhost:5000
 
 ## Running with Docker
 The application is fully containerized for easy and consistent deployment.
 
 Build the Docker image:
-
-Bash
-
+```
 docker build -t robotics-dashboard-backend .
+```
 Run the Docker container (using your .env file):
-
-Bash
-
+```
 docker run --env-file .env -p 5000:5000 robotics-dashboard-backend
+```
 ## Automated Testing
 The backend includes a comprehensive testing suite to ensure code quality and reliability.
 
@@ -108,21 +104,16 @@ Unit Tests: Business logic within the service layer is tested in isolation.
 Integration Tests: Critical API endpoints (e.g., user registration, login, robot configuration) are tested to ensure the entire request/response cycle works correctly.
 
 How to Run Tests:
-
-Bash
-
+```
 npm test
+```
 ## REST API Endpoints
 Auth:
-
 POST /api/auth/register
-
 POST /api/auth/login
 
 Robots:
-
 GET /api/robots?page=1&limit=10&status=active
-
 PUT /api/robots/:id/config (JWT required)
 
 ## Authentication
@@ -169,14 +160,14 @@ Durability & Replay: Persists all telemetry for a configurable period, enabling 
 Ecosystem Integration: Natively integrates with AWS Lambda, S3, and other services, allowing for decoupled and scalable data processing pipelines.
 
 ### Data Flow
-Code snippet
-
+```
 graph TD
     A[Robots] -- Telemetry Stream --> B(AWS Kinesis Data Stream);
     B -- Events --> C{AWS Lambda};
     C -- Aggregated State --> D[(MongoDB Atlas)];
     C -- Raw Time-Series Data --> E[(S3 / AWS Timestream)];
     F[Fleet Dashboard] <--> D;
+```
 By using Kinesis as a buffer, we decouple ingestion from persistence. MongoDB receives only the curated state needed for the real-time dashboard, while raw data is offloaded to more suitable storage like S3 or a time-series database like AWS Timestream for historical analysis.
 
 ## Health & Monitoring
